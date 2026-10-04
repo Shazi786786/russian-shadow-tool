@@ -1,6 +1,15 @@
-import { neon } from '@neondatabase/serverless'
-let sqlClient:any
-export function sql(){ if(!sqlClient){ if(!process.env.DATABASE_URL) throw new Error('DATABASE_URL missing'); sqlClient=neon(process.env.DATABASE_URL) } return sqlClient }
+import { Pool } from 'pg'
+let pool: Pool | undefined
+export function sql(){
+  if(!pool){
+    if(!process.env.DATABASE_URL) throw new Error('DATABASE_URL missing')
+    pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.DATABASE_URL.includes('localhost')?false:{rejectUnauthorized:false},max:5})
+  }
+  return async (strings:TemplateStringsArray,...values:any[])=>{
+    let text=''; for(let i=0;i<strings.length;i++){text+=strings[i];if(i<values.length)text+='$'+(i+1)}
+    const r=await pool!.query(text,values); return r.rows as any[]
+  }
+}
 export async function ensureSchema(){
  const q=sql();
  await q`CREATE TABLE IF NOT EXISTS users(id bigserial primary key, username text unique not null, password_hash text not null, role text not null default 'user', is_premium boolean not null default false, premium_until timestamptz, is_active boolean not null default true, created_at timestamptz not null default now(), last_login_at timestamptz)`;
