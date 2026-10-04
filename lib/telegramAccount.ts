@@ -224,8 +224,6 @@ export async function sendViaTelegramAccount(userId:number,chatId:string,message
     if(size>20*1024*1024)throw new Error('MEDIA_TOO_LARGE')
     const buf=Buffer.from(await res.arrayBuffer())
     if(buf.length>20*1024*1024)throw new Error('MEDIA_TOO_LARGE')
-    let fileName='upload'
-    try{fileName=new URL(mediaUrl).pathname.split('/').pop()||'upload'}catch{}
-    await client.sendFile(target.entity,{file:buf,caption:message,fileName,forceDocument:mediaType==='document'})
+    await client.sendFile(target.entity,{file:buf,caption:message,forceDocument:mediaType==='document'})
   }finally{try{await client.disconnect()}catch{}}
 }
