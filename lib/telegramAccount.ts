@@ -30,7 +30,7 @@ export function telegramAccountConfigured(){
 }
 
 function sessionKey(){
-  const src=process.env.TELEGRAM_SESSION_KEY||''
+  const src=process.env.TELEGRAM_SESSION_KEY||process.env.CRON_SECRET||process.env.TELEGRAM_WEBHOOK_SECRET||''
   if(!src)throw new Error('TELEGRAM_SESSION_KEY_NOT_CONFIGURED')
   return crypto.createHash('sha256').update(src).digest()
 }
