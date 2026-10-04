@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { TelegramClient } from 'telegram'
+import { TelegramClient, Api } from 'telegram'
 import { StringSession } from 'telegram/sessions'
 import * as QRCode from 'qrcode'
 import { ensureSchema, sql } from './db'
@@ -202,7 +202,7 @@ export async function disconnectTelegramAccount(userId:number){
   await ensureSchema();const q=sql()
   const rows=await q`SELECT * FROM telegram_accounts WHERE user_id=${userId} LIMIT 1`
   if(rows.length&&rows[0].session_enc){
-    try{const client=await newClient(decryptSession(rows[0].session_enc));await client.invoke(new (require('telegram').Api.auth.LogOut)());await client.disconnect()}catch{}
+    try{const client=await newClient(decryptSession(rows[0].session_enc));await client.invoke(new Api.auth.LogOut());await client.disconnect()}catch{}
   }
   await q`DELETE FROM telegram_accounts WHERE user_id=${userId}`
   return {ok:true}
