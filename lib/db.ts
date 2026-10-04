@@ -40,5 +40,9 @@ export async function ensureSchema(){
  await q`CREATE TABLE IF NOT EXISTS campaign_groups(campaign_id bigint references campaigns(id) on delete cascade, group_id bigint references authorized_groups(id) on delete cascade, primary key(campaign_id,group_id))`
  await q`CREATE TABLE IF NOT EXISTS send_logs(id bigserial primary key, campaign_id bigint references campaigns(id) on delete cascade, group_id bigint, status text not null, detail text, created_at timestamptz not null default now())`
  await q`CREATE TABLE IF NOT EXISTS registration_codes(user_id bigint primary key references users(id) on delete cascade, code text unique not null, expires_at timestamptz not null)`
+ await q`CREATE TABLE IF NOT EXISTS telegram_accounts(id bigserial primary key, user_id bigint unique references users(id) on delete cascade, telegram_user_id bigint, username text, display_name text, phone_masked text, session_enc text, connected boolean not null default false, created_at timestamptz not null default now(), updated_at timestamptz not null default now(), last_sync_at timestamptz)`
+ await q`CREATE TABLE IF NOT EXISTS telegram_dialogs(id bigserial primary key, account_id bigint references telegram_accounts(id) on delete cascade, chat_id bigint not null, title text not null, kind text not null, can_post boolean not null default true, member_count int, updated_at timestamptz not null default now(), unique(account_id,chat_id))`
+ await q`CREATE TABLE IF NOT EXISTS campaign_dialogs(campaign_id bigint references campaigns(id) on delete cascade, dialog_id bigint references telegram_dialogs(id) on delete cascade, primary key(campaign_id,dialog_id))`
+ try{await q`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS delivery_mode text not null default 'bot'`}catch{}
  schemaReady=true
 }
