@@ -2,45 +2,40 @@
 
 Permission-based Telegram multi-group marketing automation.
 
-## Vercel Import Settings
-- Repository: `Shazi786786/russian-shadow-scraper`
-- Branch / Production Branch: `russian-shadow-tool-20261004`
-- Root Directory: `russian-shadow-tool-vercel-v1`
+## Vercel Import
+- Repository: `Shazi786786/russian-shadow-tool`
+- Branch: `main`
+- Root Directory: project root
 - Framework: Next.js
 
-## Locked plan rules
-- Free: maximum 10 authorized groups per campaign; minimum repeat interval 4 hours.
-- Premium: maximum 100 authorized groups per campaign; minimum repeat interval 1 minute.
-- Telegram permissions are not bypassed. A group admin must explicitly add the bot, grant posting/admin permission, and run `/register_group CODE` inside that group.
-- If bot posting permission is later removed, the group is skipped and logged.
+## Plan Rules
+- Free: max 10 authorized groups; minimum repeat interval 4 hours.
+- Premium: max 100 authorized groups; minimum repeat interval 1 minute.
+- Only groups where the Telegram bot has been explicitly added and granted posting permission can be registered.
+- If posting permission is removed later, that group is skipped and logged.
 
-## Admin
-Set these in Vercel Environment Variables:
-- `ADMIN_USERNAME=Shadowlogs`
-- `ADMIN_PASSWORD=Shadowlogs@`
-
-## Premium offer
-- Regular price: $50
-- Today offer: $7
-- Telegram: @Shadowteamlog
-
-## Required Vercel environment variables
-- `DATABASE_URL` — Neon pooled Postgres connection string
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
+## Required Vercel Environment Variables
+- `DATABASE_URL` — Neon pooled PostgreSQL connection string
+- `ADMIN_USERNAME` — set to your admin username
+- `ADMIN_PASSWORD` — set only in Vercel, never commit it to GitHub
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_WEBHOOK_SECRET`
 - `CRON_SECRET`
 - `NEXT_PUBLIC_UPGRADE_TELEGRAM=Shadowteamlog`
 
-## First production setup
-1. Import this repository into Vercel using the branch/root settings above.
-2. Connect Neon Postgres and add `DATABASE_URL`.
-3. Add all environment variables.
+## Premium Offer
+- Regular price: $50
+- Today offer: $7
+- Telegram: @Shadowteamlog
+
+## First Production Setup
+1. Import this repo into Vercel.
+2. Connect a Neon Postgres database and add its pooled `DATABASE_URL`.
+3. Add the environment variables above.
 4. Deploy.
 5. Login as admin.
-6. POST `/api/telegram/setup` once while authenticated as admin to register the Telegram webhook.
-7. Customers add the bot to approved groups, grant posting permission, and run the registration command shown on their dashboard.
+6. While logged in as admin, POST `/api/telegram/setup` once to register the Telegram webhook.
+7. Users can then authorize groups by adding the bot, granting posting permission, and using the registration command shown in their dashboard.
 
 ## Scheduler
-`vercel.json` schedules `/api/cron`. Plan interval rules are also enforced server-side.
+`vercel.json` runs the cron endpoint on a one-minute schedule. Each campaign still obeys its own Free/Premium interval rules server-side.
