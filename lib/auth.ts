@@ -9,6 +9,8 @@ export async function bootstrapAdmin(){
   const pass=process.env.ADMIN_PASSWORD||'Shazi786.?@';
   const stored=hashPass(pass);
   const admins=await q`SELECT id,username FROM users WHERE role='admin' ORDER BY id ASC LIMIT 1`;
+  const clash=await q`SELECT id FROM users WHERE username=${name} AND role<>'admin' LIMIT 1`;
+  if(clash.length){await q`UPDATE users SET username=${name+'_user_'+clash[0].id} WHERE id=${clash[0].id}`}
   if(admins.length){
     await q`UPDATE users SET username=${name},password_hash=${stored},is_premium=true,is_active=true WHERE id=${admins[0].id}`;
   }else{
