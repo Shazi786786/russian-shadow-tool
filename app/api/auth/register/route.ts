@@ -1,0 +1,1 @@
+import {createUser} from '../../../../lib/auth';import {NextResponse} from 'next/server';export async function POST(req:Request){const f=await req.formData();try{await createUser(String(f.get('username')||''),String(f.get('password')||''))}catch{}return NextResponse.redirect(new URL('/login',req.url),303)}
