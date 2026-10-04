@@ -1,1 +1,1 @@
-import {logout} from '../../../../lib/auth';import {NextResponse} from 'next/server';export async function POST(req:Request){await logout();return NextResponse.redirect(new URL('/login',req.url),303)}
+import {logout} from '../../../../lib/auth';import {NextResponse} from 'next/server';export async function POST(req:Request){await logout();return new Response(null,{status:303,headers:{Location:'/login'}})}
